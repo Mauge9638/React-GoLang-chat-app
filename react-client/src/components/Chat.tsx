@@ -1,37 +1,25 @@
-import { useState } from "react";
+import {
+  LegacyRef,
+  MutableRefObject,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { ChatMessage } from "../types/ChatMessage";
 
 export function Chat() {
-  const userColors = { John: "red", Jane: "blue" };
+  const userColors = { John: "red", ["Jane Solomon"]: "blue" };
+
+  const messagesEndRef: MutableRefObject<Element | null> = useRef(null);
 
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     { id: "someid1", message: "Hello", sender: "John", timestamp: new Date() },
     {
       id: "someid2",
       message: "Hi",
-      sender: "Jane",
+      sender: "Jane Solomon",
       timestamp: new Date(),
     },
-    {
-      id: "someid3",
-      message: "How are you?",
-      sender: "John",
-      timestamp: new Date(),
-    },
-    {
-      id: "someid4",
-      message:
-        "This is a very long message that should wrap around, so that it doesn't overflow the container. Let's see if it works. It should work. I hope it works. I think it works. It works. This is a very long message that should wrap around, so that it doesn't overflow the container. Let's see if it works. It should work. I hope it works. I think it works. It works. This is a very long message that should wrap around, so that it doesn't overflow the container. Let's see if it works. It should work. I hope it works. I think it works. It works.  This is a very long message that should wrap around, so that it doesn't overflow the container. Let's see if it works. It should work. I hope it works. I think it works. It works. This is a very long message that should wrap around, so that it doesn't overflow the container. Let's see if it works. It should work. I hope it works. I think it works. It works.",
-      sender: "Jane",
-      timestamp: new Date(),
-    },
-    {
-      id: "someid5",
-      message: "Good to hear",
-      sender: "John",
-      timestamp: new Date(),
-    },
-    { id: "someid6", message: "Bye", sender: "Jane", timestamp: new Date() },
   ]);
 
   const chat = chatMessages.map((chatMessage) => (
@@ -46,8 +34,17 @@ export function Chat() {
         }}
       >
         <div>
-          {chatMessage.sender}, <br />
-          at {chatMessage.timestamp.toLocaleTimeString()}:
+          <p className="text-xs">
+            {chatMessage.timestamp.toLocaleTimeString()},
+          </p>
+          <p
+            className="border-b-2 border-solid w-fit"
+            style={{
+              borderColor: userColors[(chatMessage.sender as "John") || "Jane"],
+            }}
+          >
+            {chatMessage.sender}:
+          </p>
         </div>
       </div>
       <div className="resize-none col-span-9 text-left pl-1">
@@ -61,17 +58,22 @@ export function Chat() {
       ...chatMessages,
       {
         id: "someid7",
-        message: "Hello",
+        message: `Hello - ${new Date().getTime()}`,
         sender: "John",
         timestamp: new Date(),
       },
     ]);
   };
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages]);
+
   return (
-    <div className="border-2 border-black border-solid row-span-3 h-full overflow-y-hidden">
+    <div>
+      <ul className="h-full max-h-full">{chat}</ul>
+      <div ref={messagesEndRef as LegacyRef<HTMLDivElement>} />
       <button onClick={addChatMessage}>Test</button>
-      <ul className="max-h-full overflow-hidden">{chat}</ul>
     </div>
   );
 }
