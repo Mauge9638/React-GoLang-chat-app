@@ -14,7 +14,7 @@ export function Input() {
   return (
     <div className="border-2 border-black border-solid bg-red-500 row-span-1">
       <textarea
-        className="p-2 w-full text-left resize-none"
+        className="p-2 w-full h-3/4 text-left resize-none"
         onKeyDown={takeInput}
         onChange={(event) => {
           setTextAreaValue(event.currentTarget.value);
